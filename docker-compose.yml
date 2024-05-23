@@ -6,6 +6,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - .:/app
+      - .:/app:delegated
     environment:
       - ENVIRONMENT=development
+    command: ["poetry", "run", "uvicorn", "fastapi_user_management.app:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
