@@ -11,14 +11,14 @@ python = ">=3.11,<3.12"
 fastapi = "^0.110.1"
 uvicorn = "^0.29.0"
 python-multipart = "^0.0.9"
-pydantic = {version = "1.10.15", extras = ["email", "dotenv"]}
+pydantic = {version = "2.7.1", extras = ["email", "dotenv"]}
 sqlalchemy = "^2.0.29"
 alembic = "^1.13.1"
-passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+passlib = {extras = ["bcrypt"], version = "*"}
 python-jose = {extras = ["cryptography"], version = "^3.3.0"}
 omegaconf = "^2.3.0"
 importlib-metadata = "^7.1.0"
-
+pydantic_settings = '*'
 
 [tool.poetry.group.test]
 optional = true
