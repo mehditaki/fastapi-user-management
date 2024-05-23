@@ -10,7 +10,7 @@ CREATE_USER_OPENAPI_EXAMPLE: dict[str, dict[str, Any]] = {
             "username": "rick.sanchez@citadel.com",
             "status": "active",
             "roles": [{"name": "admin"}],
-            "password": "Wubba-Lubba-Dub-Dub",
+            "password": "Wubba-Lubba-Dub-Dub", # warning: security leak
         },
     },
     "new user": {
