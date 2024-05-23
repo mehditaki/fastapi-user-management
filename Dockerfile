@@ -7,18 +7,17 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-RUN pip install --no-cache-dir poetry
+#RUN pip install --no-cache-dir poetry
 
 WORKDIR /app
 
-COPY pyproject.toml poetry.lock ./
+COPY requirements.txt .
 
-RUN poetry install --no-root
+RUN apt update && apt install -y git
+RUN pip install -r requirements.txt
 
 COPY . .
 
-RUN poetry install --with lint,test
-
 EXPOSE 8000
 
-CMD ["poetry", "run", "uvicorn", "fastapi_user_management.app:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+CMD ["uvicorn", "fastapi_user_management.app:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
