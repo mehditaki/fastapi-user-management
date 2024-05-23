@@ -1,9 +1,10 @@
 """Fastapi application config."""
 
 from omegaconf import OmegaConf
-from pydantic import EmailStr, BaseSettings
+from pydantic import EmailStr
 
 from fastapi_user_management import __version__
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 APP_CUSTOM_CONFIG = OmegaConf.load("settings.yaml")
 class Settings(BaseSettings):
@@ -27,10 +28,7 @@ class Settings(BaseSettings):
     )
 
     DATABASE_URI: str = APP_CUSTOM_CONFIG.database.uri
-
-    class Config:
-        env_file = ".env"
-        case_sensitive = True
+    model_config = SettingsConfigDict(env_file=".env", case_sensitive=True)
 
 
 SETTINGS = Settings()
