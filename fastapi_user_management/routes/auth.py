@@ -55,16 +55,16 @@ async def get_current_user(
             token, SETTINGS.SECRET_KEY, algorithms=[SETTINGS.ALGORITHM]
         )
         username: EmailStr = payload.get("sub")
-        if username is None:   
-            raise CREDENTIALS_EXCEPTION   
+        if username is None:
+            raise CREDENTIALS_EXCEPTION
         token_data = TokenData(username=username)
-    except JWTError as e:   
-        raise CREDENTIALS_EXCEPTION from e   
+    except JWTError as e:
+        raise CREDENTIALS_EXCEPTION from e
     user: UserModel | Any = crud.user.get_by_username(
         db=db, username=token_data.username
     )
-    if user is None:   
-        raise CREDENTIALS_EXCEPTION   
+    if user is None:
+        raise CREDENTIALS_EXCEPTION
     return user
 
 
@@ -115,6 +115,20 @@ async def login_for_access_token(
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
+
+    def user_login_lambda(success):
+        return (
+            HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="DB failed",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+            if success is False
+            else None
+        )
+
+    user_login_lambda(crud.user.update_last_login(db=db, user=user))
+
     access_token_expires = timedelta(minutes=SETTINGS.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": user.username}, expires_delta=access_token_expires
