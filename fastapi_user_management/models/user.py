@@ -42,8 +42,12 @@ class UserModel(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     fullname: Mapped[str] = mapped_column(String, nullable=False, unique=False)
     username: Mapped[str] = mapped_column(String, nullable=False, unique=True)
+    phone_number: Mapped[str] = mapped_column(String, nullable=True, unique=True)
     password: Mapped[str] = mapped_column(String, nullable=False, unique=False)
     created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, unique=False
+    )
+    last_login: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, unique=False
     )
     status: Mapped[UserStatusValues] = mapped_column(
@@ -68,6 +72,23 @@ class UserModel(Base):
             raise ValueError("Failed simple email validation")
         return username
 
+    @validates("phone_number")
+    def validate_phone_number(self, key: str, phone_number: str) -> str:
+        """Simple phone number validator.
+
+        Args:
+            key (str): Database key
+            phone_number (str): value of phone number
+
+        Raises:
+            ValueError: Failed simple phone number validation
+        """
+        if not phone_number.isdigit() or len(phone_number) != 10:
+            raise ValueError(
+                "Failed simple phone number validation: must be 10 digits."
+            )
+        return phone_number
+
     def __repr__(self) -> str:
         """Database object representation.
 
@@ -76,5 +97,6 @@ class UserModel(Base):
         """
         return (
             f"<User(username={self.username}, fullname={self.fullname},"
+            f" phone_number={self.phone_number},"
             f" status={self.status})>"
         )

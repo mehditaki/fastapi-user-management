@@ -59,12 +59,14 @@ class CRUDUser(CRUDBase[UserModel, BaseUserCreate | UserCreate, UserUpdate]):
         db_obj: UserModel = self.model(
             username=obj_in.username,
             fullname=obj_in.fullname,
+            phone_number=obj_in.phone_number,
             password=get_password_hash(
                 obj_in.password
                 if obj_in.password is not None
                 else secrets.token_urlsafe(PASSWORD_LENGTH)
             ),
             created_at=datetime.utcnow(),
+            last_login=datetime.utcnow(),
             status=(
                 obj_in.status if obj_in.status is not None else UserStatusValues.PENDING
             ),
@@ -165,6 +167,23 @@ class CRUDUser(CRUDBase[UserModel, BaseUserCreate | UserCreate, UserUpdate]):
             select(RoleModel).where(RoleModel.name == RoleNames.ADMIN)
         ).scalar_one_or_none()
         return admin_role in db_obj.roles
+
+    def update_last_login(self, db: Session, user: UserModel) -> bool:
+        """Update user last login.
+
+        Args:
+            db (Session): database session
+            user (UserModel): selected user
+
+        Returns:
+            bool: perfect fully updated last login.
+        """
+        try:
+            user.last_login = datetime.utcnow()
+            db.commit()
+            return True
+        except Exception:
+            return False
 
 
 user = CRUDUser(UserModel)
