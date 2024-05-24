@@ -21,6 +21,20 @@ PASSWORD_LENGTH = 8
 class CRUDUser(CRUDBase[UserModel, BaseUserCreate | UserCreate, UserUpdate]):
     """CRUD for user database model."""
 
+    def get_by_id(self, db: Session, *, id: int) -> UserModel | None:
+        """Get user by username.
+
+        Args:
+            db (Session): database session
+            id (int): id
+
+        Returns:
+            UserModel | None: selected user
+        """
+        return db.execute(
+            select(self.model).where(self.model.id == id)
+        ).scalar_one_or_none()
+
     def get_by_username(self, db: Session, *, username: EmailStr) -> UserModel | None:
         """Get user by username.
 
