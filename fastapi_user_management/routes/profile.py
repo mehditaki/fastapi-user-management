@@ -55,8 +55,11 @@ async def read_user_profile(
 
         return user
 
+    except HTTPException as http_exc:
+        raise http_exc
+
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=e.__repr__(),
+            detail="Internal Server Error",
         ) from e
