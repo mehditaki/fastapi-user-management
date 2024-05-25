@@ -19,6 +19,13 @@ def create_db_and_tables() -> None:
     Base.metadata.create_all(engine)
 
 
+def on_startup() -> None:
+    """Initiate database on startup."""
+    create_db_and_tables()
+    with Session(bind=engine) as session:
+        init_db(db=session)
+
+
 app = FastAPI(
     title=SETTINGS.TITLE,
     description=SETTINGS.DESCRIPTION,
@@ -26,13 +33,7 @@ app = FastAPI(
     redoc_url=SETTINGS.REDOC_URL,
 )
 
-
-@app.on_event("startup")
-def on_startup() -> None:
-    """Initiate database on startup."""
-    create_db_and_tables()
-    with Session(bind=engine) as session:
-        init_db(db=session)
+app.add_event_handler("startup", on_startup)
 
 
 @app.get("/")
